@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {StyleSheet, View, Button, SafeAreaView} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 import Video from 'react-native-video';
 
 interface Props {
@@ -7,18 +7,19 @@ interface Props {
 }
 
 export const Player = ({url}: Props) => {
-  const player = useRef();
+  const [loading, setLoading] = useState(false);
 
   return (
     <View>
       <Video
-        source={{uri: url}} // Can be a URL or a local file.
-        // ref={player} // Store reference
-        // onBuffer={this.onBuffer} // Callback when remote video is buffering
-        // onError={this.videoError} // Callback when video cannot be loaded
+        source={{uri: url}}
         style={styles.player}
+        resizeMode="cover"
         muted
+        onLoadStart={() => setLoading(true)}
+        onLoad={() => setLoading(false)}
       />
+      {loading && <Text style={styles.loading}>LOADING...</Text>}
     </View>
   );
 };
@@ -35,5 +36,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: 'black',
+  },
+  loading: {
+    color: 'white',
   },
 });
