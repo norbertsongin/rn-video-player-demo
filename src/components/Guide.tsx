@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
 import Chance from 'chance';
@@ -6,12 +6,10 @@ import Chance from 'chance';
 const chance = new Chance();
 
 interface Hour {
-  id: string;
   hour: string;
   description: string;
 }
 interface Date {
-  id: string;
   date: string;
   hours: Hour[];
 }
@@ -21,13 +19,11 @@ for (let i = 0; i < 100; i++) {
   const hours = [];
   for (let j = 0; j < 100; j++) {
     hours.push({
-      id: `${j}`,
       hour: `Hour ${j}`,
       description: chance.sentence({words: 10}),
     });
   }
   dates.push({
-    id: `${i}`,
     date: `Date ${i}`,
     hours,
   });
@@ -36,12 +32,16 @@ for (let i = 0; i < 100; i++) {
 export const Guide = () => {
   const datesList = useRef<FlatList<Date>>();
   const hoursList = useRef<FlatList<Hour>>();
-  const [selectedDateId, setSelectedDateId] = useState(dates[0].id);
+  const [selectedDateIndex, setSelectedDateIndex] = useState(0);
 
-  const selectedDate = useMemo(
-    () => dates.find((date) => date.id === selectedDateId),
-    [selectedDateId],
-  );
+  const selectedDate = useMemo(() => dates[selectedDateIndex], [
+    selectedDateIndex,
+  ]);
+
+  useEffect(() => {
+    datesList.current?.scrollToIndex({index: selectedDateIndex});
+    hoursList.current?.scrollToIndex({index: 0});
+  }, [selectedDateIndex]);
 
   return (
     <View style={styles.container}>
@@ -49,15 +49,14 @@ export const Guide = () => {
         <FlatList
           ref={datesList}
           data={dates}
-          renderItem={({item}) => {
-            const selected = item.id === selectedDateId;
+          renderItem={({item, index}) => {
+            const selected = index === selectedDateIndex;
 
             return (
               <TouchableOpacity
                 style={selected ? styles.selectedDate : styles.date}
                 onPress={() => {
-                  hoursList.current?.scrollToIndex({index: 0});
-                  setSelectedDateId(item.id);
+                  setSelectedDateIndex(index);
                 }}>
                 <Text style={selected ? styles.selectedText : styles.text}>
                   {item.date}
@@ -65,7 +64,7 @@ export const Guide = () => {
               </TouchableOpacity>
             );
           }}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.date}
           horizontal
         />
         {selectedDate && (
@@ -78,7 +77,7 @@ export const Guide = () => {
                 <Text style={styles.text}>{item.description}</Text>
               </View>
             )}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.hour}
             horizontal
           />
         )}
