@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Button, StyleSheet, View} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {AmazonPlayer} from '../components/AmazonPlayer';
 import {Overlay} from '../components/Overlay';
 import {Player} from '../components/Player';
@@ -28,12 +27,12 @@ export const PlayerTab = () => {
         {/* <AmazonPlayer url={url} /> */}
         <Player url={url} />
       </View>
-      <SafeAreaView style={styles.overlay}>
+      <View style={styles.overlay}>
         <View style={styles.header}>
           <Button color="white" title="NEXT VIDEO" onPress={nextUrl} />
         </View>
         <Overlay />
-      </SafeAreaView>
+      </View>
     </View>
   );
 };

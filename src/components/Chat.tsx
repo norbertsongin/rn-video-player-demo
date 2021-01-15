@@ -1,77 +1,127 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-import Chance from 'chance';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+import Chance from 'chance';
 
 const chance = new Chance();
 
-const createMessage = () => `${chance.twitter()}: ${chance.sentence() + '😎'}`;
+interface Message {
+  author: string;
+  text: string;
+}
+
+const createMessage = () => ({
+  author: `${chance.name()}`,
+  text: `${chance.sentence() + '😎'}`,
+});
+
+const initialMessages = [
+  createMessage(),
+  createMessage(),
+  createMessage(),
+  createMessage(),
+  createMessage(),
+  createMessage(),
+];
 
 export const Chat = () => {
-  const [messages, setMessages] = useState<string[]>([
-    createMessage(),
-    createMessage(),
-    createMessage(),
-    createMessage(),
-    createMessage(),
-    createMessage(),
-  ]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+
+  const [text, setText] = useState('');
 
   const messagesContainer = useRef<ScrollView | null>();
 
-  const pushNewMessage = useCallback(() => {
+  const pushFakeMessage = useCallback(() => {
     setMessages((currentMessages) => {
       return [...currentMessages, createMessage()];
     });
-
-    messagesContainer.current?.scrollToEnd();
   }, []);
 
-  useEffect(() => {
-    const pushNewMessageInterval = setInterval(pushNewMessage, 500);
+  const sendMessage = useCallback(() => {
+    setMessages((currentMessages) => {
+      return [
+        ...currentMessages,
+        {
+          author: 'Me',
+          text,
+        },
+      ];
+    });
+    setText('');
+  }, [text]);
 
-    return () => clearInterval(pushNewMessageInterval);
+  useEffect(() => {
+    const pushFakeMessageInterval = setInterval(pushFakeMessage, 500);
+
+    return () => clearInterval(pushFakeMessageInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    messagesContainer.current?.scrollToEnd();
+  }, [messages]);
+
   return (
-    <View style={styles.chat}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={50}>
       <View style={styles.messagesContainer}>
-        <ScrollView
-          ref={messagesContainer}
-          contentContainerStyle={styles.messages}
-          scrollEnabled={false}>
+        <ScrollView ref={messagesContainer} scrollEnabled={false}>
           {messages.map((message, index) => (
             <Text key={index} style={styles.message}>
-              {message}
+              <Text style={{fontWeight: 'bold'}}>{message.author}</Text>:{' '}
+              <Text>{message.text}</Text>
             </Text>
           ))}
         </ScrollView>
       </View>
-    </View>
+      <View style={styles.textInputWrapper}>
+        <TextInput
+          style={styles.textInput}
+          value={text}
+          onChangeText={setText}
+          placeholder="Write a message."
+          placeholderTextColor="white"
+          selectionColor="white"
+          returnKeyType="send"
+          onSubmitEditing={sendMessage}
+        />
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  chat: {
+  container: {
     flex: 1,
     justifyContent: 'flex-end',
+    paddingHorizontal: 20,
   },
   messagesContainer: {
-    // flex: 1,
-    // width: '100%',
-    height: 200,
-    // backgroundColor: 'green',
-  },
-  messages: {
-    // flex: 1,
-    // height: 200,
-    // backgroundColor: 'blue',
-    // alignSelf: 'flex-end',
-    // justifyContent: 'flex-end',
+    flex: 0,
+    maxHeight: 300,
   },
   message: {
     color: 'white',
     padding: 5,
+  },
+  textInputWrapper: {
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  textInput: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    color: 'white',
   },
 });
