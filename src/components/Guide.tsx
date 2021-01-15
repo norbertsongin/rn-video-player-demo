@@ -92,6 +92,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   date: {
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.5)',
     padding: 20,
     backgroundColor: 'rgba(0, 0, 0, 0.25)',
     maxWidth: 200,

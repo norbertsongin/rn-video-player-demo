@@ -1,72 +1,28 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import React from 'react';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {Chat} from './Chat';
 import {Content} from './Content';
 import {Guide} from './Guide';
 
-const options = [
-  {
-    label: 'Home',
-    content: <Content />,
-  },
-  {
-    label: 'Chat',
-    content: <Chat />,
-  },
-  {
-    label: 'Guide',
-    content: <Guide />,
-  },
-];
+const Tab = createMaterialTopTabNavigator();
 
 export const Overlay = () => {
-  const [content, setContent] = useState(options[0].content);
-
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>{content}</View>
-      <View style={styles.row}>
-        {options.map((option, index) => {
-          const selected = option.content === content;
-
-          return (
-            <TouchableOpacity
-              key={index}
-              onPress={() => setContent(option.content)}>
-              <Text style={selected ? styles.selectedButton : styles.button}>
-                {option.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </View>
+    <Tab.Navigator
+      lazy
+      tabBarPosition="bottom"
+      sceneContainerStyle={{backgroundColor: 'transparent'}}
+      tabBarOptions={{
+        activeTintColor: 'white',
+        inactiveTintColor: 'gray',
+        showIcon: false,
+        showLabel: true,
+        indicatorContainerStyle: {display: 'none'},
+        style: {backgroundColor: 'transparent'},
+      }}>
+      <Tab.Screen name="Home" component={Content} />
+      <Tab.Screen name="Chat" component={Chat} />
+      <Tab.Screen name="Guide" component={Guide} />
+    </Tab.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {
-    fontSize: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    color: 'gray',
-  },
-  selectedButton: {
-    fontSize: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    color: 'white',
-  },
-});
