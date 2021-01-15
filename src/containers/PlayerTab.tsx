@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useState} from 'react';
+import {Button, StyleSheet, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {AmazonPlayer} from '../components/AmazonPlayer';
 import {Overlay} from '../components/Overlay';
 import {Player} from '../components/Player';
@@ -12,22 +13,27 @@ const urls = [
 ];
 
 export const PlayerTab = () => {
-  const [url, setUrl] = useState(urls[0]);
+  const [urlIndex, setUrlIndex] = useState(0);
 
-  useEffect(() => {
-    const setUrlInterval = setInterval(() => {
-      const randomIndex = Math.round(Math.random() * (urls.length - 1));
-      setUrl(urls[randomIndex]);
-    }, 10000);
+  const url = urls[urlIndex];
 
-    return () => clearInterval(setUrlInterval);
-  }, []);
+  const nextUrl = () =>
+    setUrlIndex((currentUrlIndex) =>
+      currentUrlIndex < urls.length ? currentUrlIndex + 1 : 0,
+    );
 
   return (
     <View style={styles.container}>
-      {/* <AmazonPlayer url={url} /> */}
-      <Player url={url} />
-      <Overlay />
+      <View style={styles.playerWrapper}>
+        {/* <AmazonPlayer url={url} /> */}
+        <Player url={url} />
+      </View>
+      <SafeAreaView style={styles.overlay}>
+        <View style={styles.header}>
+          <Button color="white" title="NEXT VIDEO" onPress={nextUrl} />
+        </View>
+        <Overlay />
+      </SafeAreaView>
     </View>
   );
 };
@@ -36,5 +42,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  playerWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  header: {
+    alignItems: 'flex-end',
+  },
+  overlay: {
+    flex: 1,
   },
 });

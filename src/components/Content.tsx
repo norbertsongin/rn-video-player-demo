@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -7,10 +7,18 @@ const chance = new Chance();
 export const Content = () => {
   const text = chance.sentence({words: 100});
 
-  return <Text style={styles.contentText}>{text}</Text>;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.contentText}>{text}</Text>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
   contentText: {
     color: 'white',
     fontSize: 20,
