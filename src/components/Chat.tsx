@@ -5,7 +5,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 
 const chance = new Chance();
 
-const createMessage = () => `${chance.twitter()}: ${chance.sentence()}`;
+const createMessage = () => `${chance.twitter()}: ${chance.sentence() + '😎'}`;
 
 export const Chat = () => {
   const [messages, setMessages] = useState<string[]>([
