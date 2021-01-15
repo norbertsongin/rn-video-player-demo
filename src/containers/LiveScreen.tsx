@@ -11,7 +11,7 @@ const urls = [
   'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
 ];
 
-export const PlayerTab = () => {
+export const LiveScreen = () => {
   const [urlIndex, setUrlIndex] = useState(0);
 
   const url = urls[urlIndex];
